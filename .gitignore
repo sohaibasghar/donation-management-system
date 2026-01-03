@@ -17,3 +17,4 @@ build/*
 .cursorrules
 PRD.md
 tasks/IMPLEMENTATION.md
+.vercel

@@ -2,6 +2,8 @@ import { MainLayout } from '@/components/layout/main-layout';
 import { getCurrentMonth } from '@/actions/payment.actions';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const currentMonth = await getCurrentMonth();
 
