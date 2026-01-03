@@ -18,9 +18,7 @@ export function useDonors(initialData?: Donor[]) {
   });
 }
 
-export function useDonorsWithLastPayment(
-  initialData?: DonorWithLastPayment[],
-) {
+export function useDonorsWithLastPayment(initialData?: DonorWithLastPayment[]) {
   return useQuery<DonorWithLastPayment[]>({
     queryKey: ['donors-with-last-payment'],
     queryFn: () => getDonorsWithLastPayment(),
@@ -105,4 +103,3 @@ export function useDeleteDonor() {
     },
   });
 }
-

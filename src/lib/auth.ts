@@ -38,4 +38,3 @@ export function authenticateUser(
 export function getUserById(id: string): User | null {
   return HARDCODED_USERS.find((u) => u.id === id) || null;
 }
-

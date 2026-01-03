@@ -84,8 +84,6 @@ export async function createPayment(data: {
   try {
     const service = getPaymentService();
     const payment = await service.createPayment(data);
-    
-    // Serialize dates to strings
     return {
       id: payment.id,
       donorId: payment.donorId,
@@ -118,8 +116,6 @@ export async function updatePayment(
   try {
     const service = getPaymentService();
     const payment = await service.updatePayment(id, data);
-    
-    // Serialize dates to strings
     return {
       id: payment.id,
       donorId: payment.donorId,
@@ -137,7 +133,12 @@ export async function updatePayment(
 
 export async function getDonorsWithPaymentStatus(month: string): Promise<
   Array<{
-    donor: { id: string; name: string; contact: string | null; monthlyAmount: number };
+    donor: {
+      id: string;
+      name: string;
+      contact: string | null;
+      monthlyAmount: number;
+    };
     payment: {
       id: string;
       donorId: string;
@@ -151,7 +152,7 @@ export async function getDonorsWithPaymentStatus(month: string): Promise<
   try {
     const service = getPaymentService();
     const data = await service.getDonorsWithPaymentStatus(month);
-    
+
     // Convert Date objects to ISO strings for serialization
     return data.map((item) => ({
       donor: item.donor,
@@ -170,7 +171,9 @@ export async function getDonorsWithPaymentStatus(month: string): Promise<
     }));
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : 'Failed to load donors with payment status',
+      error instanceof Error
+        ? error.message
+        : 'Failed to load donors with payment status',
     );
   }
 }

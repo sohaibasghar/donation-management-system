@@ -97,7 +97,10 @@ export function DonorForm({
         <form onSubmit={handleSubmit}>
           <div className="space-y-5 py-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="name"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Name *
               </Label>
               <Input
@@ -111,7 +114,10 @@ export function DonorForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contact" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="contact"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Contact
               </Label>
               <Input
@@ -124,7 +130,10 @@ export function DonorForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="monthlyAmount" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="monthlyAmount"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Monthly Amount *
               </Label>
               <Input
@@ -171,8 +180,8 @@ export function DonorForm({
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting}
               className="gradient-primary text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >

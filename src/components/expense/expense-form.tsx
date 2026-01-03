@@ -19,10 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  useCreateExpense,
-  useUpdateExpense,
-} from '@/hooks/use-expenses';
+import { useCreateExpense, useUpdateExpense } from '@/hooks/use-expenses';
 import { EXPENSE_CATEGORIES } from '@/lib/constants';
 
 interface ExpenseFormProps {
@@ -121,7 +118,10 @@ export function ExpenseForm({
         <form onSubmit={handleSubmit}>
           <div className="space-y-5 py-4">
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="title"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Title *
               </Label>
               <Input
@@ -135,7 +135,10 @@ export function ExpenseForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="category"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Category *
               </Label>
               <Select
@@ -158,7 +161,10 @@ export function ExpenseForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="amount"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Amount *
               </Label>
               <Input
@@ -175,7 +181,10 @@ export function ExpenseForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="date" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="date"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Date *
               </Label>
               <Input
@@ -206,8 +215,8 @@ export function ExpenseForm({
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting}
               className="gradient-primary text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >

@@ -144,4 +144,3 @@ export class DonorService {
     await this.donorRepository.delete(id);
   }
 }
-

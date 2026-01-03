@@ -1,5 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { getMonthlyStats, getLastPaymentsByMonth } from '@/actions/stats.actions';
+import {
+  getMonthlyStats,
+  getLastPaymentsByMonth,
+} from '@/actions/stats.actions';
 import { MonthlyStats, LastPaymentByMonth } from '@/types/domain';
 
 export function useDashboardStats(month: string) {
@@ -7,7 +10,6 @@ export function useDashboardStats(month: string) {
     queryKey: ['dashboard-stats', month],
     queryFn: () => getMonthlyStats(month),
   });
-
 
   return {
     stats: statsQuery.data,
@@ -19,4 +21,3 @@ export function useDashboardStats(month: string) {
     },
   };
 }
-

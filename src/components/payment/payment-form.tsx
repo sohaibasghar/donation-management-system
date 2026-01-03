@@ -109,7 +109,10 @@ export function PaymentForm({
         <form onSubmit={handleSubmit}>
           <div className="space-y-5 py-4">
             <div className="space-y-2">
-              <Label htmlFor="donor" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="donor"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Donor *
               </Label>
               <Select
@@ -131,13 +134,17 @@ export function PaymentForm({
               </Select>
               {selectedDonor && (
                 <p className="text-xs text-gray-600 font-medium mt-1.5">
-                  Default monthly amount: {formatCurrency(selectedDonor.monthlyAmount)}
+                  Default monthly amount:{' '}
+                  {formatCurrency(selectedDonor.monthlyAmount)}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="amount"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Amount *
               </Label>
               <Input
@@ -159,7 +166,10 @@ export function PaymentForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="status"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Status *
               </Label>
               <Select
@@ -195,8 +205,8 @@ export function PaymentForm({
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting || isLoadingDonors}
               className="gradient-primary text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >
@@ -208,4 +218,3 @@ export function PaymentForm({
     </Dialog>
   );
 }
-

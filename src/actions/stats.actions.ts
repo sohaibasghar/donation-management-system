@@ -24,21 +24,15 @@ export async function getMonthlyStats(month: string): Promise<MonthlyStats> {
     const paymentRepository = new PaymentRepository();
     const donorRepository = new DonorRepository();
 
-    const [
-      paymentStats,
-      totalExpenses,
-    ] = await Promise.all([
+    const [paymentStats, totalExpenses] = await Promise.all([
       paymentService.getMonthlyStats(month),
       expenseService.getTotalByMonth(month),
-
     ]);
 
     // Count unpaid donors: those with unpaid payments + active donors without payment records
     const unpaidPayments = await paymentRepository.findByMonth(month);
     const paidDonorIds = new Set(
-      unpaidPayments
-        .filter((p) => p.status === 'PAID')
-        .map((p) => p.donorId),
+      unpaidPayments.filter((p) => p.status === 'PAID').map((p) => p.donorId),
     );
     const allActiveDonors = await donorRepository.findActive();
     const unpaidDonorsCount = allActiveDonors.filter(
@@ -74,9 +68,8 @@ export async function getLastPaymentsByMonth(
       const monthDate = subMonths(currentDate, i);
       const month = format(monthDate, DATE_FORMAT);
 
-      const lastPayment = await paymentRepository.findLastPaidPaymentByMonth(
-        month,
-      );
+      const lastPayment =
+        await paymentRepository.findLastPaidPaymentByMonth(month);
 
       results.push({
         month,

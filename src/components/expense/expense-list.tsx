@@ -80,13 +80,20 @@ export function ExpenseList({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-1.5">Expenses</h2>
-          <p className="text-sm text-gray-600 font-medium">Track and manage expenses</p>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-1.5">
+            Expenses
+          </h2>
+          <p className="text-sm text-gray-600 font-medium">
+            Track and manage expenses
+          </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
           <MonthSelector value={month} onChange={setMonth} />
           {isAuthenticated && (
-            <Button onClick={handleAdd} className="w-full sm:w-auto gradient-primary text-white hover:shadow-md transition-shadow">
+            <Button
+              onClick={handleAdd}
+              className="w-full sm:w-auto gradient-primary text-white hover:shadow-md transition-shadow"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Expense
             </Button>
@@ -99,12 +106,22 @@ export function ExpenseList({
         <Table>
           <TableHeader>
             <TableRow className="bg-gradient-to-r from-gray-50 via-gray-50/80 to-gray-100/50 border-b border-gray-200">
-              <TableHead className="font-semibold text-gray-700 h-12">Title</TableHead>
-              <TableHead className="font-semibold text-gray-700">Category</TableHead>
-              <TableHead className="font-semibold text-gray-700">Amount</TableHead>
-              <TableHead className="font-semibold text-gray-700">Date</TableHead>
+              <TableHead className="font-semibold text-gray-700 h-12">
+                Title
+              </TableHead>
+              <TableHead className="font-semibold text-gray-700">
+                Category
+              </TableHead>
+              <TableHead className="font-semibold text-gray-700">
+                Amount
+              </TableHead>
+              <TableHead className="font-semibold text-gray-700">
+                Date
+              </TableHead>
               {isAuthenticated && (
-                <TableHead className="text-right font-semibold text-gray-700">Actions</TableHead>
+                <TableHead className="text-right font-semibold text-gray-700">
+                  Actions
+                </TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -131,23 +148,37 @@ export function ExpenseList({
                     <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
                       <Receipt className="h-6 w-6 text-gray-400" />
                     </div>
-                    <p className="font-medium">No expenses found for this month</p>
-                    <p className="text-sm text-gray-400">Try selecting a different month</p>
+                    <p className="font-medium">
+                      No expenses found for this month
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Try selecting a different month
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
             ) : (
               expenses.map((expense) => (
-                <TableRow key={expense.id} className="hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-blue-50/20 transition-all duration-300 border-b border-gray-100/80 group">
+                <TableRow
+                  key={expense.id}
+                  className="hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-blue-50/20 transition-all duration-300 border-b border-gray-100/80 group"
+                >
                   <TableCell className="font-medium py-4">
-                    <span className="text-gray-900 font-semibold">{expense.title}</span>
+                    <span className="text-gray-900 font-semibold">
+                      {expense.title}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="border-purple-200 text-purple-700 bg-purple-50">
+                    <Badge
+                      variant="outline"
+                      className="border-purple-200 text-purple-700 bg-purple-50"
+                    >
                       {expense.category}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-semibold text-gray-900">{formatCurrency(expense.amount)}</TableCell>
+                  <TableCell className="font-semibold text-gray-900">
+                    {formatCurrency(expense.amount)}
+                  </TableCell>
                   <TableCell className="text-gray-600">
                     {new Date(expense.date).toLocaleDateString()}
                   </TableCell>
@@ -200,8 +231,12 @@ export function ExpenseList({
               <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
                 <Receipt className="h-6 w-6 text-gray-400" />
               </div>
-              <p className="font-medium text-gray-500">No expenses found for this month</p>
-              <p className="text-sm text-gray-400">Try selecting a different month</p>
+              <p className="font-medium text-gray-500">
+                No expenses found for this month
+              </p>
+              <p className="text-sm text-gray-400">
+                Try selecting a different month
+              </p>
             </div>
           </div>
         ) : (
@@ -262,7 +297,9 @@ export function ExpenseList({
 
       <div className="flex justify-end">
         <div className="px-6 py-4 rounded-xl bg-gradient-to-br from-purple-50 via-purple-50/80 to-purple-100/50 border border-purple-200/60 shadow-lg">
-          <div className="text-sm font-medium text-gray-600 mb-1.5">Total Expenses</div>
+          <div className="text-sm font-medium text-gray-600 mb-1.5">
+            Total Expenses
+          </div>
           <div className="text-2xl font-bold bg-gradient-to-r from-purple-700 to-purple-800 bg-clip-text text-transparent">
             {formatCurrency(total)}
           </div>

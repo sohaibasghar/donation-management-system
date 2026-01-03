@@ -78,9 +78,7 @@ export class PaymentService {
     );
 
     if (existingPayment) {
-      throw new Error(
-        'Payment record already exists for this donor and month',
-      );
+      throw new Error('Payment record already exists for this donor and month');
     }
 
     const createData: {
@@ -146,7 +144,12 @@ export class PaymentService {
 
   async getDonorsWithPaymentStatus(month: string): Promise<
     Array<{
-      donor: { id: string; name: string; contact: string | null; monthlyAmount: number };
+      donor: {
+        id: string;
+        name: string;
+        contact: string | null;
+        monthlyAmount: number;
+      };
       payment: MonthlyPayment | null;
     }>
   > {
@@ -222,4 +225,3 @@ export class PaymentService {
     return format(new Date(), DATE_FORMAT);
   }
 }
-

@@ -127,4 +127,3 @@ export class ExpenseService {
     return this.expenseRepository.sumByMonth(month);
   }
 }
-

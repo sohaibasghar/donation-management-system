@@ -19,7 +19,7 @@ export class PaymentRepository {
     return prisma.monthlyPayment.findMany({
       where: { month },
       include: { donor: true },
-      orderBy: { amount : 'desc' },
+      orderBy: { amount: 'desc' },
     });
   }
 
@@ -114,7 +114,9 @@ export class PaymentRepository {
     return result._sum.amount || 0;
   }
 
-  async findLastPaidPaymentByMonth(month: string): Promise<MonthlyPayment | null> {
+  async findLastPaidPaymentByMonth(
+    month: string,
+  ): Promise<MonthlyPayment | null> {
     return prisma.monthlyPayment.findFirst({
       where: { month, status: 'PAID' },
       orderBy: { paidAt: 'desc' },

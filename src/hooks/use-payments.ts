@@ -60,7 +60,9 @@ export function useCreatePayment() {
     onSuccess: (_, variables) => {
       // Use setTimeout to defer query invalidation until after current render cycle
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['payments', variables.month] });
+        queryClient.invalidateQueries({
+          queryKey: ['payments', variables.month],
+        });
         queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       }, 0);
     },
@@ -85,10 +87,11 @@ export function useUpdatePayment() {
     onSuccess: (_, variables) => {
       // Use setTimeout to defer query invalidation until after current render cycle
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['payments', variables.month] });
+        queryClient.invalidateQueries({
+          queryKey: ['payments', variables.month],
+        });
         queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       }, 0);
     },
   });
 }
-

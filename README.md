@@ -24,7 +24,6 @@ UI → Actions → Bloc → Repository → Prisma → DB
 
 - **UI Layer**: Presentation logic only, uses Tailwind + shadcn
 - **Actions Layer**: Server Actions for data mutations, validation
-- **BLoC Layer**: Business logic, framework-agnostic
 - **Repository Layer**: Database access via Prisma only
 - **Prisma Layer**: Database schema and migrations
 
@@ -117,7 +116,6 @@ src/
 │   ├── payments/     # Payments page
 │   └── expenses/     # Expenses page
 ├── actions/          # Server Actions
-├── blocs/            # Business logic layer
 ├── components/       # React components
 │   ├── ui/           # shadcn/ui components
 │   ├── layout/       # Layout components

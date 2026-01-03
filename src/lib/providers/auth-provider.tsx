@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { User } from '@/types/auth';
 import { authenticateUser, getUserById } from '@/lib/auth';
 
@@ -33,7 +39,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (
+    username: string,
+    password: string,
+  ): Promise<boolean> => {
     const authenticatedUser = authenticateUser(username, password);
     if (authenticatedUser) {
       setUser(authenticatedUser);
@@ -73,4 +82,3 @@ export function useAuth() {
   }
   return context;
 }
-
