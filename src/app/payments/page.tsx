@@ -5,6 +5,8 @@ import {
 } from '@/actions/payment.actions';
 import { PaymentTable } from '@/components/payment/payment-table';
 
+export const dynamic = 'force-dynamic';
+
 export default async function PaymentsPage() {
   const currentMonth = await getCurrentMonth();
   const initialData = await getDonorsWithPaymentStatus(currentMonth);
