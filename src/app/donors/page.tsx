@@ -3,6 +3,7 @@ import { getDonorsWithLastPayment } from '@/actions/donor.actions';
 import { DonorList } from '@/components/donor/donor-list';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function DonorsPage() {
   const donors = await getDonorsWithLastPayment();

@@ -6,6 +6,7 @@ import {
 import { PaymentTable } from '@/components/payment/payment-table';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function PaymentsPage() {
   const currentMonth = await getCurrentMonth();

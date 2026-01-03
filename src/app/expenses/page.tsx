@@ -7,6 +7,7 @@ import {
 import { ExpenseList } from '@/components/expense/expense-list';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function ExpensesPage() {
   const currentMonth = await getCurrentMonth();
