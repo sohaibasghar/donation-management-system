@@ -141,4 +141,12 @@ export class PaymentRepository {
     });
     return paidPayments.map((p) => p.donorId);
   }
+
+  async sumAllPaid(): Promise<number> {
+    const result = await prisma.monthlyPayment.aggregate({
+      where: { status: 'PAID' },
+      _sum: { amount: true },
+    });
+    return result._sum.amount || 0;
+  }
 }

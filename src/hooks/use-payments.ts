@@ -28,7 +28,7 @@ export function usePayments(
   initialMonth?: string,
 ) {
   return useQuery<PaymentData[]>({
-    queryKey: ['payments'],
+    queryKey: ['payments', month],
     queryFn: async () => {
       try {
         const data = await getDonorsWithPaymentStatus(month);
@@ -60,7 +60,7 @@ export function useCreatePayment() {
       // Use setTimeout to defer query invalidation until after current render cycle
       setTimeout(() => {
         queryClient.invalidateQueries({
-          queryKey: ['payments'],
+          queryKey: ['payments', variables.month],
         });
         queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       }, 0);

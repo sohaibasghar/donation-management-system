@@ -224,4 +224,8 @@ export class PaymentService {
   getCurrentMonth(): string {
     return format(new Date(), DATE_FORMAT);
   }
+
+  async getAllTimeTotalDonations(): Promise<number> {
+    return this.paymentRepository.sumAllPaid();
+  }
 }
