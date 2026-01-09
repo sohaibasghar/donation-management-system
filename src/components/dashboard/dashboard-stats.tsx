@@ -25,7 +25,7 @@ interface DashboardStatsProps {
 export function DashboardStats({ initialMonth }: DashboardStatsProps) {
   const [month, setMonth] = useState(initialMonth);
   const [currentTime, setCurrentTime] = useState<string>('');
-  const { stats, isLoading } = useDashboardStats(month);
+  const { stats, allTimeStats, isLoading } = useDashboardStats(month);
 
   useEffect(() => {
     // Only set time on client to avoid hydration mismatch
@@ -134,39 +134,11 @@ export function DashboardStats({ initialMonth }: DashboardStatsProps) {
           </CardContent>
         </Card>
 
-        <Card
-          className={`card-hover border-0 shadow-lg bg-gradient-to-br overflow-hidden relative group ${stats.netBalance >= 0 ? 'from-emerald-50 via-emerald-50/80 to-emerald-100/50' : 'from-red-50 via-red-50/80 to-red-100/50'}`}
-        >
-          <div
-            className={`absolute inset-0 bg-gradient-to-br ${stats.netBalance >= 0 ? 'from-emerald-500/5' : 'from-red-500/5'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-          ></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              Available Balance
-            </CardTitle>
-            <div
-              className={`h-12 w-12 rounded-xl ${stats.netBalance >= 0 ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 shadow-md shadow-emerald-500/10' : 'bg-gradient-to-br from-red-500/20 to-red-600/10 shadow-md shadow-red-500/10'} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
-            >
-              <Wallet
-                className={`h-6 w-6 ${stats.netBalance >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
-              />
-            </div>
-          </CardHeader>
-          <CardContent className="relative z-10">
-            <div
-              className={`text-3xl font-bold mb-2 bg-gradient-to-r bg-clip-text text-transparent ${stats.netBalance >= 0 ? 'from-emerald-600 to-emerald-700' : 'from-red-600 to-red-700'}`}
-            >
-              {formatCurrency(stats.netBalance)}
-            </div>
-            <p className="text-xs text-gray-600 font-medium">After expenses</p>
-          </CardContent>
-        </Card>
-
-        <Card className="card-hover border-0 shadow-lg bg-gradient-to-br from-purple-50 via-purple-50/80 to-purple-100/50 lg:col-span-2 overflow-hidden relative group">
+        <Card className="card-hover border-0 shadow-lg bg-gradient-to-br from-purple-50 via-purple-50/80 to-purple-100/50 overflow-hidden relative group">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
             <CardTitle className="text-sm font-semibold text-gray-700">
-              Total Expenses
+              Total Expenses (All Time)
             </CardTitle>
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 flex items-center justify-center shadow-md shadow-purple-500/10 group-hover:scale-110 transition-transform duration-300">
               <Receipt className="h-6 w-6 text-purple-600" />
@@ -174,8 +146,41 @@ export function DashboardStats({ initialMonth }: DashboardStatsProps) {
           </CardHeader>
           <CardContent className="relative z-10">
             <div className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
-              {formatCurrency(stats.totalExpenses)}
+              {formatCurrency(allTimeStats?.totalExpenses || 0)}
             </div>
+            <p className="text-xs text-gray-600 font-medium">
+              {formatCurrency(stats.totalExpenses)} this month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card
+          className={`lg:col-span-2 card-hover border-0 shadow-lg bg-gradient-to-br overflow-hidden relative group ${(allTimeStats?.availableBalance || 0) >= 0 ? 'from-emerald-50 via-emerald-50/80 to-emerald-100/50' : 'from-red-50 via-red-50/80 to-red-100/50'}`}
+        >
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${(allTimeStats?.availableBalance || 0) >= 0 ? 'from-emerald-500/5' : 'from-red-500/5'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+          ></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
+            <CardTitle className="text-sm font-semibold text-gray-700">
+              Available Balance (All Time)
+            </CardTitle>
+            <div
+              className={`h-12 w-12 rounded-xl ${(allTimeStats?.availableBalance || 0) >= 0 ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 shadow-md shadow-emerald-500/10' : 'bg-gradient-to-br from-red-500/20 to-red-600/10 shadow-md shadow-red-500/10'} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+            >
+              <Wallet
+                className={`h-6 w-6 ${(allTimeStats?.availableBalance || 0) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+              />
+            </div>
+          </CardHeader>
+          <CardContent className="relative z-10">
+            <div
+              className={`text-3xl font-bold mb-2 bg-gradient-to-r bg-clip-text text-transparent ${(allTimeStats?.availableBalance || 0) >= 0 ? 'from-emerald-600 to-emerald-700' : 'from-red-600 to-red-700'}`}
+            >
+              {formatCurrency(allTimeStats?.availableBalance || 0)}
+            </div>
+            <p className="text-xs text-gray-600 font-medium">
+              {formatCurrency(stats.netBalance)} this month
+            </p>
           </CardContent>
         </Card>
       </div>

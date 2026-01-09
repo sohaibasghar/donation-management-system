@@ -23,3 +23,9 @@ export interface LastPaymentByMonth {
   lastPaymentDate: Date | null;
   amount: number;
 }
+
+export interface AllTimeStats {
+  totalDonations: number;
+  totalExpenses: number;
+  availableBalance: number;
+}

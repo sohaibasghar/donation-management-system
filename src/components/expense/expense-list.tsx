@@ -12,40 +12,53 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MonthSelector } from '@/components/shared/month-selector';
+import { YearMonthFilter } from '@/components/shared/year-month-filter';
 import { ExpenseForm } from './expense-form';
-import { getExpenseTotalByMonth } from '@/actions/expense.actions';
 import { formatCurrency } from '@/lib/utils';
-import { Plus, Edit, Trash2, Loader2, Receipt } from 'lucide-react';
-import { useExpensesByMonth, useDeleteExpense } from '@/hooks/use-expenses';
-import { useQuery } from '@tanstack/react-query';
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Loader2,
+  Receipt,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import { useExpensesPaginated, useDeleteExpense } from '@/hooks/use-expenses';
 import { useAuth } from '@/lib/providers/auth-provider';
+import { getCurrentMonth } from '@/actions/payment.actions';
 
 interface ExpenseListProps {
   initialMonth: string;
   initialExpenses: Expense[];
 }
 
+const PAGE_SIZE = 10;
+
 export function ExpenseList({
   initialMonth,
   initialExpenses,
 }: ExpenseListProps) {
-  const [month, setMonth] = useState(initialMonth);
+  const [page, setPage] = useState(1);
+  const [year, setYear] = useState<number | undefined>(undefined);
+  const [month, setMonth] = useState<number | undefined>(undefined);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  const { data: expenses = initialExpenses, isLoading } = useExpensesByMonth(
+  const { data, isLoading, error } = useExpensesPaginated(
+    page,
+    PAGE_SIZE,
+    year,
     month,
-    month === initialMonth ? initialExpenses : undefined,
   );
-  const deleteMutation = useDeleteExpense();
 
-  const { data: total = 0 } = useQuery({
-    queryKey: ['expense-total', month],
-    queryFn: () => getExpenseTotalByMonth(month),
-    enabled: !!month,
-  });
+  const expenses = data?.expenses || [];
+  const total = data?.total || 0;
+  const totalPages = data?.totalPages || 0;
+  const totalAmount = data?.totalAmount || 0;
+
+  const deleteMutation = useDeleteExpense();
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this expense?')) {
@@ -54,6 +67,10 @@ export function ExpenseList({
 
     try {
       await deleteMutation.mutateAsync(id);
+      // Reset to first page if current page becomes empty
+      if (expenses.length === 1 && page > 1) {
+        setPage(page - 1);
+      }
     } catch (error) {
       alert(
         error instanceof Error ? error.message : 'Failed to delete expense',
@@ -66,7 +83,7 @@ export function ExpenseList({
     setIsFormOpen(true);
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     setEditingExpense(null);
     setIsFormOpen(true);
   };
@@ -74,6 +91,25 @@ export function ExpenseList({
   const handleFormSuccess = () => {
     setIsFormOpen(false);
     setEditingExpense(null);
+  };
+
+  const handleYearChange = (newYear: number | undefined) => {
+    setYear(newYear);
+    setPage(1); // Reset to first page when filter changes
+    if (newYear === undefined) {
+      setMonth(undefined);
+    }
+  };
+
+  const handleMonthChange = (newMonth: number | undefined) => {
+    setMonth(newMonth);
+    setPage(1); // Reset to first page when filter changes
+  };
+
+  const handleClearFilter = () => {
+    setYear(undefined);
+    setMonth(undefined);
+    setPage(1);
   };
 
   return (
@@ -84,23 +120,35 @@ export function ExpenseList({
             Expenses
           </h2>
           <p className="text-sm text-gray-600 font-medium">
-            Track and manage expenses
+            Track and manage all expenses
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-          <MonthSelector value={month} onChange={setMonth} />
-          {isAuthenticated && (
-            <Button
-              onClick={handleAdd}
-              className="w-full sm:w-auto gradient-primary text-white hover:shadow-md transition-shadow"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Expense
-            </Button>
-          )}
-        </div>
+        {isAuthenticated && (
+          <Button
+            onClick={handleAdd}
+            className="w-full sm:w-auto gradient-primary text-white hover:shadow-md transition-shadow"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Expense
+          </Button>
+        )}
       </div>
 
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <YearMonthFilter
+          year={year}
+          month={month}
+          onYearChange={handleYearChange}
+          onMonthChange={handleMonthChange}
+          onClear={handleClearFilter}
+        />
+        {total > 0 && (
+          <div className="text-sm text-gray-600">
+            Showing {(page - 1) * PAGE_SIZE + 1} -{' '}
+            {Math.min(page * PAGE_SIZE, total)} of {total} expenses
+          </div>
+        )}
+      </div>
       {/* Desktop Table */}
       <div className="hidden md:block rounded-xl border border-gray-200/60 bg-white shadow-lg overflow-x-auto">
         <Table>
@@ -108,6 +156,9 @@ export function ExpenseList({
             <TableRow className="bg-gradient-to-r from-gray-50 via-gray-50/80 to-gray-100/50 border-b border-gray-200">
               <TableHead className="font-semibold text-gray-700 h-12">
                 Title
+              </TableHead>
+              <TableHead className="font-semibold text-gray-700">
+                Description
               </TableHead>
               <TableHead className="font-semibold text-gray-700">
                 Category
@@ -129,7 +180,7 @@ export function ExpenseList({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={isAuthenticated ? 5 : 4}
+                  colSpan={isAuthenticated ? 6 : 5}
                   className="text-center py-8"
                 >
                   <div className="flex items-center justify-center gap-2 text-gray-500">
@@ -138,21 +189,30 @@ export function ExpenseList({
                   </div>
                 </TableCell>
               </TableRow>
+            ) : error ? (
+              <TableRow>
+                <TableCell
+                  colSpan={isAuthenticated ? 6 : 5}
+                  className="text-center py-8 text-red-600"
+                >
+                  Failed to load expenses
+                </TableCell>
+              </TableRow>
             ) : expenses.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={isAuthenticated ? 5 : 4}
+                  colSpan={isAuthenticated ? 6 : 5}
                   className="text-center py-12 text-gray-500"
                 >
                   <div className="flex flex-col items-center justify-center gap-2">
                     <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
                       <Receipt className="h-6 w-6 text-gray-400" />
                     </div>
-                    <p className="font-medium">
-                      No expenses found for this month
-                    </p>
+                    <p className="font-medium">No expenses found</p>
                     <p className="text-sm text-gray-400">
-                      Try selecting a different month
+                      {year || month
+                        ? 'Try adjusting your filters'
+                        : 'Add your first expense to get started'}
                     </p>
                   </div>
                 </TableCell>
@@ -166,6 +226,11 @@ export function ExpenseList({
                   <TableCell className="font-medium py-4">
                     <span className="text-gray-900 font-semibold">
                       {expense.title}
+                    </span>
+                  </TableCell>
+                  <TableCell className="max-w-xs">
+                    <span className="text-gray-700 text-sm line-clamp-2">
+                      {expense.description || '—'}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -231,11 +296,11 @@ export function ExpenseList({
               <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
                 <Receipt className="h-6 w-6 text-gray-400" />
               </div>
-              <p className="font-medium text-gray-500">
-                No expenses found for this month
-              </p>
+              <p className="font-medium text-gray-500">No expenses found</p>
               <p className="text-sm text-gray-400">
-                Try selecting a different month
+                {year || month
+                  ? 'Try adjusting your filters'
+                  : 'Add your first expense to get started'}
               </p>
             </div>
           </div>
@@ -250,6 +315,9 @@ export function ExpenseList({
                   <h3 className="font-semibold text-gray-900">
                     {expense.title}
                   </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {expense.description || '—'}
+                  </p>
                   <Badge variant="outline" className="mt-2">
                     {expense.category}
                   </Badge>
@@ -295,22 +363,81 @@ export function ExpenseList({
         )}
       </div>
 
-      <div className="flex justify-end">
-        <div className="px-6 py-4 rounded-xl bg-gradient-to-br from-purple-50 via-purple-50/80 to-purple-100/50 border border-purple-200/60 shadow-lg">
-          <div className="text-sm font-medium text-gray-600 mb-1.5">
-            Total Expenses
-          </div>
-          <div className="text-2xl font-bold bg-gradient-to-r from-purple-700 to-purple-800 bg-clip-text text-transparent">
-            {formatCurrency(total)}
+      {/* Total Amount */}
+      {totalAmount > 0 && (
+        <div className="flex justify-end">
+          <div className="px-6 py-4 rounded-xl bg-gradient-to-br from-purple-50 via-purple-50/80 to-purple-100/50 border border-purple-200/60 shadow-lg">
+            <div className="text-sm font-medium text-gray-600 mb-1.5">
+              {year || month ? 'Filtered Total' : 'Total Amount'}
+            </div>
+            <div className="text-2xl font-bold bg-gradient-to-r from-purple-700 to-purple-800 bg-clip-text text-transparent">
+              {formatCurrency(totalAmount)}
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1 || isLoading}
+            className="h-9"
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous
+          </Button>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum: number;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (page <= 3) {
+                pageNum = i + 1;
+              } else if (page >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = page - 2 + i;
+              }
+              return (
+                <Button
+                  key={pageNum}
+                  variant={page === pageNum ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPage(pageNum)}
+                  disabled={isLoading}
+                  className="h-9 w-9"
+                >
+                  {pageNum}
+                </Button>
+              );
+            })}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages || isLoading}
+            className="h-9"
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      )}
 
       <ExpenseForm
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
         expense={editingExpense}
-        month={month}
+        month={
+          month && year
+            ? `${year}-${String(month).padStart(2, '0')}`
+            : initialMonth
+        }
         onSuccess={handleFormSuccess}
       />
     </div>

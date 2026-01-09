@@ -78,4 +78,56 @@ export class ExpenseRepository {
 
     return result._sum.amount || 0;
   }
+
+  async sumAll(): Promise<number> {
+    const result = await prisma.expense.aggregate({
+      _sum: { amount: true },
+    });
+    return result._sum.amount || 0;
+  }
+
+  async findAllPaginated(
+    page: number,
+    pageSize: number,
+    year?: number,
+    month?: number,
+  ): Promise<{ expenses: Expense[]; total: number; totalAmount: number }> {
+    const where: Prisma.ExpenseWhereInput = {};
+
+    if (year !== undefined && month !== undefined) {
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0, 23, 59, 59);
+      where.date = {
+        gte: startDate,
+        lte: endDate,
+      };
+    } else if (year !== undefined) {
+      const startDate = new Date(year, 0, 1);
+      const endDate = new Date(year, 11, 31, 23, 59, 59);
+      where.date = {
+        gte: startDate,
+        lte: endDate,
+      };
+    }
+
+    const [expenses, total, sumResult] = await Promise.all([
+      prisma.expense.findMany({
+        where,
+        orderBy: { date: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.expense.count({ where }),
+      prisma.expense.aggregate({
+        where,
+        _sum: { amount: true },
+      }),
+    ]);
+
+    return {
+      expenses,
+      total,
+      totalAmount: sumResult._sum.amount || 0,
+    };
+  }
 }

@@ -87,3 +87,31 @@ export async function getLastPaymentsByMonth(
     );
   }
 }
+
+export async function getAllTimeStats(): Promise<{
+  totalDonations: number;
+  totalExpenses: number;
+  availableBalance: number;
+}> {
+  try {
+    const paymentService = getPaymentService();
+    const expenseService = getExpenseService();
+
+    const [totalDonations, totalExpenses] = await Promise.all([
+      paymentService.getAllTimeTotalDonations(),
+      expenseService.getTotalAll(),
+    ]);
+
+    const availableBalance = totalDonations - totalExpenses;
+
+    return {
+      totalDonations,
+      totalExpenses,
+      availableBalance,
+    };
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to get all-time stats',
+    );
+  }
+}

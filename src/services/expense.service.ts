@@ -32,12 +32,17 @@ export class ExpenseService {
 
   async createExpense(data: {
     title: string;
+    description: string;
     amount: number;
     category: string;
     date: Date;
   }): Promise<Expense> {
     if (!data.title || data.title.trim().length === 0) {
       throw new Error('Expense title is required');
+    }
+
+    if (!data.description || data.description.trim().length === 0) {
+      throw new Error('Expense description is required');
     }
 
     if (!data.amount || data.amount <= 0) {
@@ -54,6 +59,7 @@ export class ExpenseService {
 
     return this.expenseRepository.create({
       title: data.title.trim(),
+      description: data.description.trim(),
       amount: data.amount,
       category: data.category.trim(),
       date: data.date,
@@ -64,6 +70,7 @@ export class ExpenseService {
     id: string,
     data: {
       title?: string;
+      description?: string;
       amount?: number;
       category?: string;
       date?: Date;
@@ -75,6 +82,7 @@ export class ExpenseService {
 
     const updateData: {
       title?: string;
+      description?: string;
       amount?: number;
       category?: string;
       date?: Date;
@@ -85,6 +93,13 @@ export class ExpenseService {
         throw new Error('Expense title cannot be empty');
       }
       updateData.title = data.title.trim();
+    }
+
+    if (data.description !== undefined) {
+      if (data.description.trim().length === 0) {
+        throw new Error('Expense description cannot be empty');
+      }
+      updateData.description = data.description.trim();
     }
 
     if (data.amount !== undefined) {
@@ -125,5 +140,25 @@ export class ExpenseService {
     }
 
     return this.expenseRepository.sumByMonth(month);
+  }
+
+  async getTotalAll(): Promise<number> {
+    return this.expenseRepository.sumAll();
+  }
+
+  async getAllPaginated(
+    page: number,
+    pageSize: number,
+    year?: number,
+    month?: number,
+  ): Promise<{ expenses: Expense[]; total: number; totalAmount: number }> {
+    if (page < 1) {
+      throw new Error('Page must be greater than 0');
+    }
+    if (pageSize < 1 || pageSize > 100) {
+      throw new Error('Page size must be between 1 and 100');
+    }
+
+    return this.expenseRepository.findAllPaginated(page, pageSize, year, month);
   }
 }

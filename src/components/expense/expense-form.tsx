@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -38,6 +39,7 @@ export function ExpenseForm({
   onSuccess,
 }: ExpenseFormProps) {
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [date, setDate] = useState('');
@@ -50,11 +52,13 @@ export function ExpenseForm({
   useEffect(() => {
     if (expense) {
       setTitle(expense.title);
+      setDescription(expense.description || '');
       setAmount(expense.amount.toString());
       setCategory(expense.category);
       setDate(new Date(expense.date).toISOString().split('T')[0]);
     } else {
       setTitle('');
+      setDescription('');
       setAmount('');
       setCategory('');
       const defaultDate = new Date(`${month}-01`).toISOString().split('T')[0];
@@ -73,6 +77,10 @@ export function ExpenseForm({
         throw new Error('Amount must be a positive number');
       }
 
+      if (!description || description.trim().length === 0) {
+        throw new Error('Description is required');
+      }
+
       if (!category) {
         throw new Error('Category is required');
       }
@@ -87,6 +95,7 @@ export function ExpenseForm({
           id: expense.id,
           data: {
             title,
+            description,
             amount: expenseAmount,
             category,
             date: expenseDate,
@@ -95,6 +104,7 @@ export function ExpenseForm({
       } else {
         await createMutation.mutateAsync({
           title,
+          description,
           amount: expenseAmount,
           category,
           date: expenseDate,
@@ -131,6 +141,25 @@ export function ExpenseForm({
                 required
                 disabled={isSubmitting}
                 className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="description"
+                className="text-sm font-semibold text-gray-700"
+              >
+                Description *
+              </Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                disabled={isSubmitting}
+                rows={3}
+                className="border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200 resize-none"
+                placeholder="Enter expense description..."
               />
             </div>
 

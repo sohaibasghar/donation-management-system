@@ -1,20 +1,16 @@
 import { MainLayout } from '@/components/layout/main-layout';
 import { getCurrentMonth } from '@/actions/payment.actions';
-import {
-  getExpensesByMonth,
-  getExpenseTotalByMonth,
-} from '@/actions/expense.actions';
+import { getExpensesPaginated } from '@/actions/expense.actions';
 import { ExpenseList } from '@/components/expense/expense-list';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+const PAGE_SIZE = 10;
+
 export default async function ExpensesPage() {
   const currentMonth = await getCurrentMonth();
-  const [expenses, total] = await Promise.all([
-    getExpensesByMonth(currentMonth),
-    getExpenseTotalByMonth(currentMonth),
-  ]);
+  const { expenses } = await getExpensesPaginated(1, PAGE_SIZE);
 
   return (
     <MainLayout>
