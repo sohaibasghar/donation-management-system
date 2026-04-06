@@ -35,11 +35,16 @@ import { PaymentData } from '@/hooks/use-payments';
 interface PaymentTableProps {
   initialMonth: string;
   initialData: PaymentData[];
+  initialTab?: 'unpaid' | 'paid';
 }
 
-export function PaymentTable({ initialMonth, initialData }: PaymentTableProps) {
+export function PaymentTable({
+  initialMonth,
+  initialData,
+  initialTab = 'unpaid',
+}: PaymentTableProps) {
   const [month, setMonth] = useState(initialMonth);
-  const [activeTab, setActiveTab] = useState<'unpaid' | 'paid'>('unpaid');
+  const [activeTab, setActiveTab] = useState<'unpaid' | 'paid'>(initialTab);
   const [editing, setEditing] = useState<{
     donorId: string;
     amount: string;

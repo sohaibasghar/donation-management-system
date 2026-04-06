@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MonthSelector } from '@/components/shared/month-selector';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
@@ -25,6 +26,7 @@ interface DashboardStatsProps {
 export function DashboardStats({ initialMonth }: DashboardStatsProps) {
   const [month, setMonth] = useState(initialMonth);
   const [currentTime, setCurrentTime] = useState<string>('');
+  const router = useRouter();
   const { stats, allTimeStats, isLoading } = useDashboardStats(month);
 
   useEffect(() => {
@@ -94,7 +96,10 @@ export function DashboardStats({ initialMonth }: DashboardStatsProps) {
           </CardContent>
         </Card>
 
-        <Card className="card-hover border-0 shadow-lg bg-gradient-to-br from-emerald-50 via-emerald-50/80 to-emerald-100/50 overflow-hidden relative group">
+        <Card
+          className="card-hover border-0 shadow-lg bg-gradient-to-br from-emerald-50 via-emerald-50/80 to-emerald-100/50 overflow-hidden relative group cursor-pointer"
+          onClick={() => router.push('/payments?status=paid')}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
             <CardTitle className="text-sm font-semibold text-gray-700">
@@ -114,7 +119,10 @@ export function DashboardStats({ initialMonth }: DashboardStatsProps) {
           </CardContent>
         </Card>
 
-        <Card className="card-hover border-0 shadow-lg bg-gradient-to-br from-orange-50 via-orange-50/80 to-orange-100/50 overflow-hidden relative group">
+        <Card
+          className="card-hover border-0 shadow-lg bg-gradient-to-br from-orange-50 via-orange-50/80 to-orange-100/50 overflow-hidden relative group cursor-pointer"
+          onClick={() => router.push('/payments?status=unpaid')}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
             <CardTitle className="text-sm font-semibold text-gray-700">

@@ -8,9 +8,19 @@ import { PaymentTable } from '@/components/payment/payment-table';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default async function PaymentsPage() {
+interface PaymentsPageProps {
+  searchParams?: Promise<{
+    status?: string;
+  }>;
+}
+
+export default async function PaymentsPage({ searchParams }: PaymentsPageProps) {
   const currentMonth = await getCurrentMonth();
   const initialData = await getDonorsWithPaymentStatus(currentMonth);
+  const params = await searchParams;
+  const status = params?.status;
+  const initialTab =
+    status === 'paid' || status === 'unpaid' ? status : 'unpaid';
 
   return (
     <MainLayout>
@@ -23,7 +33,11 @@ export default async function PaymentsPage() {
             Manage and track payment status for all donors
           </p>
         </div>
-        <PaymentTable initialMonth={currentMonth} initialData={initialData} />
+        <PaymentTable
+          initialMonth={currentMonth}
+          initialData={initialData}
+          initialTab={initialTab}
+        />
       </div>
     </MainLayout>
   );
