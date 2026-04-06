@@ -14,7 +14,9 @@ interface PaymentsPageProps {
   }>;
 }
 
-export default async function PaymentsPage({ searchParams }: PaymentsPageProps) {
+export default async function PaymentsPage({
+  searchParams,
+}: PaymentsPageProps) {
   const currentMonth = await getCurrentMonth();
   const initialData = await getDonorsWithPaymentStatus(currentMonth);
   const params = await searchParams;
