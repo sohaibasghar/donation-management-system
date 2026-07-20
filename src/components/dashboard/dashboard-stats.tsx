@@ -3,6 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { MonthSelector } from '@/components/shared/month-selector';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { DISPLAY_DATE_FORMAT } from '@/lib/constants';
@@ -15,6 +25,8 @@ import {
   Calendar,
   Clock,
   Loader2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 import { useDashboardStats } from '@/hooks/use-dashboard-stats';
@@ -23,11 +35,15 @@ interface DashboardStatsProps {
   initialMonth: string;
 }
 
+const PAGE_SIZE = 10;
+
 export function DashboardStats({ initialMonth }: DashboardStatsProps) {
   const [month, setMonth] = useState(initialMonth);
+  const [page, setPage] = useState(1);
   const [currentTime, setCurrentTime] = useState<string>('');
   const router = useRouter();
-  const { stats, allTimeStats, isLoading } = useDashboardStats(month);
+  const { stats, allTimeStats, monthlyCollections, isLoading } =
+    useDashboardStats(month);
 
   useEffect(() => {
     // Only set time on client to avoid hydration mismatch
@@ -45,6 +61,22 @@ export function DashboardStats({ initialMonth }: DashboardStatsProps) {
   const monthDate = new Date(`${stats.month}-01`);
   const monthStart = startOfMonth(monthDate);
   const monthEnd = endOfMonth(monthDate);
+  const tableData = monthlyCollections.map((item) => ({
+    month: format(new Date(`${item.month}-01`), 'MMMM yyyy'),
+    totalCollected: item.totalCollected,
+  }));
+
+  const totalCollection = monthlyCollections.reduce(
+    (total, item) => total + item.totalCollected,
+    0,
+  );
+
+  const totalPages = Math.max(1, Math.ceil(tableData.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pagedData = tableData.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   return (
     <div className="space-y-8">
@@ -192,6 +224,107 @@ export function DashboardStats({ initialMonth }: DashboardStatsProps) {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="border-0 shadow-xl bg-gradient-to-br from-white via-blue-50/40 to-indigo-50/40 backdrop-blur-sm overflow-hidden">
+        <CardHeader className="space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <CardTitle className="text-base font-semibold text-gray-800">
+                Monthly Collections
+              </CardTitle>
+              <p className="mt-1 text-sm text-gray-500">
+                Paid collections across all time
+              </p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="w-full overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Month</TableHead>
+                      <TableHead className="text-right">Collected</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pagedData.length === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={2}
+                          className="text-center text-gray-500 py-8"
+                        >
+                          No collections found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      pagedData.map((item) => (
+                        <TableRow key={item.month}>
+                          <TableCell className="font-medium">
+                            {item.month}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatCurrency(item.totalCollected)}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                  {tableData.length > 0 && (
+                    <TableFooter>
+                      <TableRow>
+                        <TableCell className="font-semibold">
+                          Total (all time)
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          {formatCurrency(totalCollection)}
+                        </TableCell>
+                      </TableRow>
+                    </TableFooter>
+                  )}
+                </Table>
+              </div>
+
+              {tableData.length > 0 && (
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-sm text-gray-500">
+                    Page {currentPage} of {totalPages} · {tableData.length}{' '}
+                    months
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage <= 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Prev
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      disabled={currentPage >= totalPages}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

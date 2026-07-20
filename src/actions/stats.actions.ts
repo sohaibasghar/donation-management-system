@@ -5,7 +5,11 @@ import { ExpenseService } from '@/services/expense.service';
 import { PaymentRepository } from '@/repositories/payment.repository';
 import { DonorRepository } from '@/repositories/donor.repository';
 import { ExpenseRepository } from '@/repositories/expense.repository';
-import { MonthlyStats, LastPaymentByMonth } from '@/types/domain';
+import {
+  MonthlyStats,
+  LastPaymentByMonth,
+  MonthlyCollection,
+} from '@/types/domain';
 import { format, subMonths } from 'date-fns';
 import { DATE_FORMAT } from '@/lib/constants';
 
@@ -84,6 +88,48 @@ export async function getLastPaymentsByMonth(
       error instanceof Error
         ? error.message
         : 'Failed to get last payments by month',
+    );
+  }
+}
+
+export async function getMonthlyCollections(
+  months: number = 6,
+): Promise<MonthlyCollection[]> {
+  try {
+    const paymentService = getPaymentService();
+    const currentDate = new Date();
+    const results: MonthlyCollection[] = [];
+
+    for (let i = months - 1; i >= 0; i--) {
+      const monthDate = subMonths(currentDate, i);
+      const month = format(monthDate, DATE_FORMAT);
+      const paymentStats = await paymentService.getMonthlyStats(month);
+
+      results.push({
+        month,
+        totalCollected: paymentStats.totalDonations,
+      });
+    }
+
+    return results;
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Failed to get monthly collections',
+    );
+  }
+}
+
+export async function getAllMonthlyCollections(): Promise<MonthlyCollection[]> {
+  try {
+    const paymentRepository = new PaymentRepository();
+    return await paymentRepository.getAllMonthlyCollections();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Failed to get all monthly collections',
     );
   }
 }

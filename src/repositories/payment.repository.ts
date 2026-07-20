@@ -142,6 +142,21 @@ export class PaymentRepository {
     return paidPayments.map((p) => p.donorId);
   }
 
+  async getAllMonthlyCollections(): Promise<
+    { month: string; totalCollected: number }[]
+  > {
+    const grouped = await prisma.monthlyPayment.groupBy({
+      by: ['month'],
+      where: { status: 'PAID' },
+      _sum: { amount: true },
+      orderBy: { month: 'desc' },
+    });
+    return grouped.map((g) => ({
+      month: g.month,
+      totalCollected: g._sum.amount || 0,
+    }));
+  }
+
   async sumAllPaid(): Promise<number> {
     const result = await prisma.monthlyPayment.aggregate({
       where: { status: 'PAID' },
