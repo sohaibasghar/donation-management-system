@@ -29,3 +29,8 @@ export interface AllTimeStats {
   totalExpenses: number;
   availableBalance: number;
 }
+
+export interface MonthlyCollection {
+  month: string;
+  totalCollected: number;
+}

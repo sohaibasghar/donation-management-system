@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   getMonthlyStats,
-  getLastPaymentsByMonth,
   getAllTimeStats,
+  getAllMonthlyCollections,
 } from '@/actions/stats.actions';
-import { MonthlyStats, LastPaymentByMonth, AllTimeStats } from '@/types/domain';
+import { MonthlyStats, AllTimeStats, MonthlyCollection } from '@/types/domain';
 
 export function useDashboardStats(month: string) {
   const statsQuery = useQuery<MonthlyStats>({
@@ -17,15 +17,31 @@ export function useDashboardStats(month: string) {
     queryFn: () => getAllTimeStats(),
   });
 
+  const monthlyCollectionsQuery = useQuery<MonthlyCollection[]>({
+    queryKey: ['monthly-collections-all'],
+    queryFn: () => getAllMonthlyCollections(),
+  });
+
   return {
     stats: statsQuery.data,
     allTimeStats: allTimeStatsQuery.data,
-    isLoading: statsQuery.isLoading || allTimeStatsQuery.isLoading,
-    isError: statsQuery.isError || allTimeStatsQuery.isError,
-    error: statsQuery.error || allTimeStatsQuery.error,
+    monthlyCollections: monthlyCollectionsQuery.data || [],
+    isLoading:
+      statsQuery.isLoading ||
+      allTimeStatsQuery.isLoading ||
+      monthlyCollectionsQuery.isLoading,
+    isError:
+      statsQuery.isError ||
+      allTimeStatsQuery.isError ||
+      monthlyCollectionsQuery.isError,
+    error:
+      statsQuery.error ||
+      allTimeStatsQuery.error ||
+      monthlyCollectionsQuery.error,
     refetch: () => {
       statsQuery.refetch();
       allTimeStatsQuery.refetch();
+      monthlyCollectionsQuery.refetch();
     },
   };
 }
